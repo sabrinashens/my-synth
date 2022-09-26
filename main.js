@@ -1,4 +1,7 @@
+synthChoice = "add"; //primary choice
+
 function selectAdd() {
+    synthChoice = "add";
     document.querySelectorAll('fieldset.Add').forEach(input => {
     input.disabled = false;
     }) 
@@ -7,10 +10,11 @@ function selectAdd() {
     })
     document.querySelectorAll('fieldset.FM').forEach(input => {
     input.disabled = true;
-    })
+    })    
 }
 
 function selectAM(){
+    synthChoice = "am";
     document.querySelectorAll('fieldset.Add').forEach(input => {
     input.disabled = true;
     }) 
@@ -23,6 +27,7 @@ function selectAM(){
 }
 
 function selectFM(){
+	synthChoice = "fm";
     document.querySelectorAll('fieldset.Add').forEach(input => {
     input.disabled = true;
     }) 
@@ -36,7 +41,7 @@ function selectFM(){
 
 var partialNum = 1
 function selectPartial(){
-partialNum = document.getElementById("partials").value;
+    partialNum = document.getElementById("partials").value; 
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -80,14 +85,30 @@ document.addEventListener("DOMContentLoaded", function(event) {
     function keyDown(event) {
         const key = (event.detail || event.which).toString();
         if (keyboardFrequencyMap[key] && !activeOscillator[key]) {
-            initAdd(key);
+		if (synthChoice === "add") {
+          initAdd(key);
+          }
+          else if (synthChoice === "am") {
+          initAM(key);
+          }
+          else if (synthChoice === "fm") {
+          initFM(key);
+          }
         }
     }
 
     function keyUp(event) {
         const key = (event.detail || event.which).toString();
         if (keyboardFrequencyMap[key] && activeOscillator[key]) {
-            stopAdd(key);
+					if (synthChoice === "add") {
+          stopAdd(key);
+          }
+          else if (synthChoice === "am") {
+          stopAM(key);
+          }
+          else if (synthChoice === "fm") {
+          stopFM(key);
+          }
         }
     }
 
@@ -136,4 +157,3 @@ document.addEventListener("DOMContentLoaded", function(event) {
     function initFM(key) {}
     function stopFM(key) {}
 })
-
