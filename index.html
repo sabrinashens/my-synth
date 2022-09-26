@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script>
+  function selectAdd() {
+    document.querySelectorAll('fieldset.Add').forEach(input => {
+      input.disabled = false;
+    }) 
+      document.querySelectorAll('fieldset.AM').forEach(input => {
+      input.disabled = true;
+    })
+      document.querySelectorAll('fieldset.FM').forEach(input => {
+      input.disabled = true;
+    })
+  }
+
+  function selectAM(){
+    document.querySelectorAll('fieldset.Add').forEach(input => {
+      input.disabled = true;
+    }) 
+      document.querySelectorAll('fieldset.AM').forEach(input => {
+      input.disabled = false;
+    })
+      document.querySelectorAll('fieldset.FM').forEach(input => {
+      input.disabled = true;
+    })
+  }
+
+  function selectFM(){
+    document.querySelectorAll('fieldset.Add').forEach(input => {
+      input.disabled = true;
+    }) 
+      document.querySelectorAll('fieldset.AM').forEach(input => {
+      input.disabled = true;
+    })
+      document.querySelectorAll('fieldset.FM').forEach(input => {
+      input.disabled = false;
+    })
+  }
+
+  var partialNum = 1
+  var AddPeak = 0.8;
+  var AddSustain = 0.65;
+  var AMFreq = 100;
+  var FMFreq = 100;
+  var FMIndex = 100;
+
+  function selectPartial() {
+    partialNum = document.getElementById("partials").value;
+      alert(partialNum);
+  }
+
+  function updateAttack(val) {
+      AddPeak.gain.value = val;
+  }
+
+  function updateSustain(val) {
+      AddSustain.gain.value = val;
+  }
+
+  function updateAMFreq(val) {
+      modulatorAMFreq.frequency.value = val;
+  }
+
+  function updateFreq(val) {
+      modulatorFMFreq.frequency.value = val;
+  };
+
+  function updateIndex(val) {
+      modulationFMIndex.gain.value = val;
+  };
+  
+</script>
+
+</head>
+
+<body>
+<fieldset class="Add" style="width:30%">
+	<legend style="text-align:center">
+	  <input type="radio" id="add" name="synth" value="add" onclick="selectAdd()" checked>
+    <label for="add">Additive</label><br>
+	</legend>
+  
+	<label for="partials">Partials:</label>
+	<input type="number" id="partials" name="partials" min="1" max="5"></input>
+	<button type="select" onclick="selectPartial()">Select</button><br><br>
+    
+  <p>ADSR Envelope:</p>
+  <label for = "adsrMax">Peak Amplitude</label>
+  <input type="range" id="adsrPeak" min=0 max=1 step=0.01 oninput="updateAttack(this.value)"></input><br>
+  <label for = "adsrSus">Sustain Amplitude</label>
+  <input type="range" id="adsrSus" min=0 max=1 step=0.01 oninput="updateSustain(this.value)"></input><br>
+</fieldset><br>
+
+
+<fieldset class="AM" style="width:30%" disabled>
+	<legend style="text-align:center">
+    <input type="radio" id="am" name="synth" value="am" onclick="selectAM()">
+    <label for="am">AM</label><br>   
+	</legend>
+    
+  <label for = "AmFreq">Modulator Frequency</label>
+	<input type="range" id = AmFreq min=1 max=1000 oninput="updateAMFreq(this.value)"></input>
+</fieldset><br>
+
+
+<fieldset class="FM" style="width:30%" disabled>
+	<legend style="text-align:center">
+    <input type="radio" id="fm" name="synth" value="fm" onclick="selectFM()">
+    <label for="fm">FM</label>   
+  </legend>
+    
+  <label for = "FmFreq">Modulator Frequency</label>
+	<input type="range" id = FmFreq min=1 max=1000 oninput="updateFMFreq(this.value)"></input><br>
+
+	<label for = "FmIndex">Index of Modulation</label>
+	<input type="range" min=1 max=1000 oninput="updateFMIndex(this.value)"></input>
+</fieldset>
+
+</body>
+</html>
