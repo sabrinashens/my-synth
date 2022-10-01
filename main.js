@@ -1,4 +1,5 @@
-synthChoice = "add"; //primary choice
+synthChoice = "add";
+keyPress = [];
 
 function selectAdd() {
     synthChoice = "add";
@@ -46,17 +47,26 @@ function selectPartial(){
 
 var modAMFreq = 100;
 function updateAMFreq(val) {
-	modAMFreq.frequency.value = val;
+	modAMFreq = val;
+    for (k in keyPress) {
+    activeAMFreq[keyPress[k]].frequency.value = val;
+    } 
 }
 
 var modFMFreq = 100;
 function updateFMFreq(val) {
-	modFMFreq.frequency.value = val;
+	modFMFreq = val;
+    for (k in keyPress) {
+        activeFMFreq[keyPress[k]].frequency.value = val;
+    }
 }
 
 var modFMInd = 100;
 function updateFMIndex(val) {
-	modFMInd.frequency.value = val;
+	modFMInd = val;
+	for (k in keyPress) {
+  	activeIndex[keyPress[k]].gain.value = val;
+    }
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -98,6 +108,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     activeAddGain = {};
     activeModulated = {};
     activeDepth = {};
+    activeAMFreq = {};
+    activeFMFreq = {};
     activeIndex = {};
 
     function keyDown(event) {
@@ -112,6 +124,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
           else if (synthChoice === "fm") {
           initFM(key);
           }
+        keyPress.push(key,);
         }
     }
 
@@ -127,17 +140,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
           else if (synthChoice === "fm") {
           stopFM(key);
           }
+        keyPress.shift();
         }
     }
 
     function initAdd(key){
-        const fundOsc = audioCtx.createOscillator();
+        var fundOsc = audioCtx.createOscillator();
         fundOsc.frequency.setValueAtTime(keyboardFrequencyMap[key], audioCtx.currentTime);
+        
         const gain = audioCtx.createGain();
+        const addgain = audioCtx.createGain();
+
         fundOsc.connect(gain);
         gain.connect(audioCtx.destination);
         gain.gain.setValueAtTime(0,audioCtx.currentTime);
-        const addgain = audioCtx.createGain();
+        
         addgain.gain.setValueAtTime(0.1, audioCtx.currentTime);
         addgain.connect(gain);
         keyFreq = keyboardFrequencyMap[key];
@@ -154,6 +171,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             gain.gain.linearRampToValueAtTime(0.8/nodeNum, audioCtx.currentTime + 0.1);
             gain.gain.exponentialRampToValueAtTime(0.6/nodeNum, audioCtx.currentTime + 0.2);
         });
+
         activeOscillator[key] = fundOsc;
         activeGainNode[key] = gain;
         activeAddGain[key] = addgain;
@@ -165,6 +183,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         activeGainNode[key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
         activeGainNode[key].gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
         activeOscillator[key].stop(audioCtx.currentTime + 0.15);
+        
         delete activeOscillator[key];
         delete activeGainNode[key];
         delete activeAddGain[key];
@@ -181,6 +200,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         const depth = audioCtx.createGain();
         depth.gain.value = 0.5
         modulated.gain.value = 1.0 - depth.gain.value; 
+        
         modulatorFreq.connect(depth).connect(modulated.gain); 
         carrier.connect(modulated)
         modulated.connect(audioCtx.destination);
@@ -192,7 +212,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
             modulated.gain.linearRampToValueAtTime(0.8/nodeNum, audioCtx.currentTime + 0.1);
             modulated.gain.exponentialRampToValueAtTime(0.6/nodeNum, audioCtx.currentTime + 0.2);
         })
+        
         activeOscillator[key] = carrier;
+        activeAMFreq[key] = modulatorFreq;
         activeModulated[key] = modulated;
         activeDepth[key] = depth;
     }
@@ -208,8 +230,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
         activeDepth[key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
         activeDepth[key].gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
         activeOscillator[key].stop(audioCtx.currentTime + 0.15);
-        
+        activeAMFreq[key].stop(audioCtx.currentTime + 0.15);
+
         delete activeOscillator[key];
+        delete activeAMFreq[key];
         delete activeModulated[key];
         delete activeDepth[key];
     }
@@ -237,7 +261,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
             gain.gain.linearRampToValueAtTime(0.8/nodeNum, audioCtx.currentTime + 0.1);
             gain.gain.exponentialRampToValueAtTime(0.6/nodeNum, audioCtx.currentTime + 0.2);
         });
+        
         activeOscillator[key] = carrier;
+        activeFMFreq[key] = modulatorFreq;
         activeGainNode[key] = gain;
         activeIndex[key] = modulationIndex;
     }
@@ -253,8 +279,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
         activeIndex[key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
         activeIndex[key].gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
         activeOscillator[key].stop(audioCtx.currentTime + 0.15);
+        activeFMFreq[key].stop(audioCtx.currentTime + 0.15);
         
         delete activeOscillator[key];
+        delete activeFMFreq[key];
         delete activeGainNode[key];
         delete activeIndex[key];
     }
