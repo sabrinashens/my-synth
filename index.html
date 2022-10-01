@@ -6,7 +6,7 @@
 </head>
 
 <body>
-<fieldset class="Add" style="width:30%">
+<fieldset class="Add" style="width:40%; margin:auto">
   <legend style="text-align:center">
     <input type="radio" id="add" name="synth" value="add" onclick="selectAdd()" checked>
     <label for="add">Additive</label><br>
@@ -22,28 +22,28 @@
   </select>
 </fieldset><br>
 
-<fieldset class="AM" style="width:30%" disabled>
-	<legend style="text-align:center">
+<fieldset class="AM" style="width:40%; margin:auto" disabled>
+  <legend style="text-align:center">
     <input type="radio" id="am" name="synth" value="am" onclick="selectAM()">
     <label for="am">AM</label><br>   
-	</legend>
+  </legend>
     
   <label for = "AmFreq">Modulator Frequency</label>
-	<input type="range" id = "AmFreq" min=1 max=1000 oninput="updateAMFreq(this.value)"></input>
+  <input type="range" id = "AmFreq" min=1 max=1000 oninput="updateAMFreq(this.value)"></input>
 </fieldset><br>
 
 
-<fieldset class="FM" style="width:30%" disabled>
-	<legend style="text-align:center">
+<fieldset class="FM" style="width:40%; margin:auto" disabled>
+  <legend style="text-align:center">
     <input type="radio" id="fm" name="synth" value="fm" onclick="selectFM()">
     <label for="fm">FM</label>   
   </legend>
     
   <label for = "FmFreq">Modulator Frequency</label>
-	<input type="range" id = "FmFreq" min=1 max=1000 oninput="updateFMFreq(this.value)"></input><br>
+  <input type="range" id = "FmFreq" min=1 max=1000 oninput="updateFMFreq(this.value)"></input><br>
 
-	<label for = "FmIndex">Index of Modulation</label>
-	<input type="range" min=1 max=1000 oninput="updateFMIndex(this.value)"></input>
+  <label for = "FmIndex">Index of Modulation</label>
+  <input type="range" min=1 max=1000 oninput="updateFMIndex(this.value)"></input>
 </fieldset>
 
 </body>
