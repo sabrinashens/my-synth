@@ -4,52 +4,76 @@ keyPress = [];
 function selectAdd() {
     synthChoice = "add";
     document.querySelectorAll('fieldset.Add').forEach(input => {
-    input.disabled = false;
+    	input.disabled = false;
     }) 
     document.querySelectorAll('fieldset.AM').forEach(input => {
-    input.disabled = true;
+    	input.disabled = true;
     })
     document.querySelectorAll('fieldset.FM').forEach(input => {
-    input.disabled = true;
+    	input.disabled = true;
     })    
 }
 
 function selectAM(){
     synthChoice = "am";
     document.querySelectorAll('fieldset.Add').forEach(input => {
-    input.disabled = true;
+    	input.disabled = true;
     }) 
     document.querySelectorAll('fieldset.AM').forEach(input => {
-    input.disabled = false;
+    	input.disabled = false;
     })
     document.querySelectorAll('fieldset.FM').forEach(input => {
-    input.disabled = true;
+    	input.disabled = true;
     })
 }
 
 function selectFM(){
 	synthChoice = "fm";
     document.querySelectorAll('fieldset.Add').forEach(input => {
-    input.disabled = true;
+        input.disabled = true;
     }) 
     document.querySelectorAll('fieldset.AM').forEach(input => {
-    input.disabled = true;
+    	input.disabled = true;
     })
     document.querySelectorAll('fieldset.FM').forEach(input => {
-    input.disabled = false;
+   		input.disabled = false;
     })
 }
 
-var partialNum = 1
-function selectPartial(){
+var partialNum = 1;
+function selectPartial() {
     partialNum = document.getElementById("partials").value; 
 }
+
+let peakVal = 0.8;
+const peakControl = document.querySelector('#peakVal');
+peakControl.addEventListener('input', function() {
+	peakVal = parseFloat(this.value);
+})
+
+var sustainVal = 0.6;
+const susValControl = document.querySelector('#susVal');
+susValControl.addEventListener('input', function() {
+	sustainVal = parseFloat(this.value);
+})
+
+let sustainTime = 0.2;
+const sustainControl = document.querySelector('#sus');
+sustainControl.addEventListener('input', function() {
+	sustainTime = parseFloat(this.value);
+})
+
+var releaseTime = 0.2;
+const releaseControl = document.querySelector('#re');
+releaseControl.addEventListener('input', function() {
+	releaseTime = parseFloat(this.value);
+})
 
 var modAMFreq = 100;
 function updateAMFreq(val) {
 	modAMFreq = val;
     for (k in keyPress) {
-    activeAMFreq[keyPress[k]].frequency.value = val;
+        activeAMFreq[keyPress[k]].frequency.value = val;
     } 
 }
 
@@ -65,7 +89,46 @@ var modFMInd = 100;
 function updateFMIndex(val) {
 	modFMInd = val;
 	for (k in keyPress) {
-  	activeIndex[keyPress[k]].gain.value = val;
+  	    activeIndex[keyPress[k]].gain.value = val;
+    }
+}
+
+function lfoClicked1() {
+	if (lfoBtn1 === true) {
+        lfoBtn1 = false;
+        document.getElementById('lfoBtn1').style.backgroundColor = "white";
+        document.getElementById('lfoBtn1').style.color = "black";
+    }
+    else {
+        lfoBtn1 = true;
+        document.getElementById('lfoBtn1').style.backgroundColor = "black";
+        document.getElementById('lfoBtn1').style.color = "white";
+    }
+}
+
+function lfoClicked2() {
+	if (lfoBtn2 === true) {
+        lfoBtn2 = false;
+        document.getElementById('lfoBtn2').style.backgroundColor = "white";
+        document.getElementById('lfoBtn2').style.color = "black";
+    }
+    else {
+        lfoBtn2 = true;
+        document.getElementById('lfoBtn2').style.backgroundColor = "black";
+        document.getElementById('lfoBtn2').style.color = "white";
+    }
+}
+
+function lfoClicked3() {
+	if (lfoBtn3 === true) {
+        lfoBtn3 = false;
+        document.getElementById('lfoBtn3').style.backgroundColor = "white";
+        document.getElementById('lfoBtn3').style.color = "black";
+    }
+    else {
+        lfoBtn3 = true;
+        document.getElementById('lfoBtn3').style.backgroundColor = "black";
+        document.getElementById('lfoBtn3').style.color = "white";
     }
 }
 
@@ -116,13 +179,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
         const key = (event.detail || event.which).toString();
         if (keyboardFrequencyMap[key] && !activeOscillator[key]) {
 		  if (synthChoice === "add") {
-          initAdd(key);
+            initAdd(key);
           }
           else if (synthChoice === "am") {
-          initAM(key);
+            initAM(key);
           }
           else if (synthChoice === "fm") {
-          initFM(key);
+            initFM(key);
           }
         keyPress.push(key,);
         }
@@ -132,13 +195,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
         const key = (event.detail || event.which).toString();
         if (keyboardFrequencyMap[key] && activeOscillator[key]) {
 		  if (synthChoice === "add") {
-          stopAdd(key);
+            stopAdd(key);
           }
           else if (synthChoice === "am") {
-          stopAM(key);
+            stopAM(key);
           }
           else if (synthChoice === "fm") {
-          stopFM(key);
+            stopFM(key);
           }
         keyPress.shift();
         }
@@ -168,10 +231,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
         fundOsc.start();
         const nodeNum = Object.keys(key).length;
         Object.keys(key).forEach(function(key) {
-            gain.gain.linearRampToValueAtTime(0.8/nodeNum, audioCtx.currentTime + 0.1);
-            gain.gain.exponentialRampToValueAtTime(0.6/nodeNum, audioCtx.currentTime + 0.2);
+            gain.gain.linearRampToValueAtTime(peakVal/nodeNum, audioCtx.currentTime + 0.1);
+            gain.gain.exponentialRampToValueAtTime(sustainVal/nodeNum, audioCtx.currentTime + sustainTime);
         });
-
+        if (lfoBtn1 === true) {
+            var lfo = audioCtx.createOscillator();
+            lfo.frequency.setValueAtTime(1, audioCtx.currentTime);
+            lfo.connect(gain);
+            lfo.start();
+        }
         activeOscillator[key] = fundOsc;
         activeGainNode[key] = gain;
         activeAddGain[key] = addgain;
@@ -180,16 +248,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
     function stopAdd(key) {
         activeGainNode[key].gain.cancelScheduledValues(audioCtx.currentTime);
         activeGainNode[key].gain.setValueAtTime(activeGainNode[key].gain.value, audioCtx.currentTime);
-        activeGainNode[key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
-        activeGainNode[key].gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
-        activeOscillator[key].stop(audioCtx.currentTime + 0.15);
-        
+        activeGainNode[key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + releaseTime);
+        activeGainNode[key].gain.setTargetAtTime(0, audioCtx.currentTime, releaseTime);
+        activeOscillator[key].stop(audioCtx.currentTime + releaseTime + 0.05);
         delete activeOscillator[key];
         delete activeGainNode[key];
         delete activeAddGain[key];
     }
     
-
     function initAM(key) {
         var carrier = audioCtx.createOscillator();
         var modulatorFreq = audioCtx.createOscillator();
@@ -211,8 +277,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
         Object.keys(key).forEach(function(key) {
             modulated.gain.linearRampToValueAtTime(0.8/nodeNum, audioCtx.currentTime + 0.1);
             modulated.gain.exponentialRampToValueAtTime(0.6/nodeNum, audioCtx.currentTime + 0.2);
-        })
-        
+        })	
+       	if (lfoBtn2 === true) {
+            var lfo = audioCtx.createOscillator();
+            lfo.frequency.setValueAtTime(10, audioCtx.currentTime);
+            lfo.connect(modulated);
+            lfo.start(); 
+        }
         activeOscillator[key] = carrier;
         activeAMFreq[key] = modulatorFreq;
         activeModulated[key] = modulated;
@@ -224,21 +295,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
         activeModulated[key].gain.setValueAtTime(activeModulated[key].gain.value, audioCtx.currentTime);
         activeModulated[key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
         activeModulated[key].gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
-        
         activeDepth[key].gain.cancelScheduledValues(audioCtx.currentTime);
         activeDepth[key].gain.setValueAtTime(activeDepth[key].gain.value, audioCtx.currentTime);
         activeDepth[key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
         activeDepth[key].gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
         activeOscillator[key].stop(audioCtx.currentTime + 0.15);
         activeAMFreq[key].stop(audioCtx.currentTime + 0.15);
-
         delete activeOscillator[key];
         delete activeAMFreq[key];
         delete activeModulated[key];
         delete activeDepth[key];
     }
     
-
     function initFM(key) {
         var carrier = audioCtx.createOscillator();
         var modulatorFreq = audioCtx.createOscillator();
@@ -260,8 +328,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
         Object.keys(key).forEach(function(key) {
             gain.gain.linearRampToValueAtTime(0.8/nodeNum, audioCtx.currentTime + 0.1);
             gain.gain.exponentialRampToValueAtTime(0.6/nodeNum, audioCtx.currentTime + 0.2);
-        });
-        
+        }); 
+        if (lfoBtn3 === true) {
+            var lfo = audioCtx.createOscillator();
+            lfo.frequency.setValueAtTime(1.0, audioCtx.currentTime);
+            lfo.connect(gain);
+            lfo.start();
+        }
         activeOscillator[key] = carrier;
         activeFMFreq[key] = modulatorFreq;
         activeGainNode[key] = gain;
@@ -273,14 +346,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
         activeGainNode[key].gain.setValueAtTime(activeGainNode[key].gain.value, audioCtx.currentTime);
         activeGainNode[key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
         activeGainNode[key].gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
-        
         activeIndex[key].gain.cancelScheduledValues(audioCtx.currentTime);
         activeIndex[key].gain.setValueAtTime(activeIndex[key].gain.value, audioCtx.currentTime);
         activeIndex[key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
         activeIndex[key].gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
         activeOscillator[key].stop(audioCtx.currentTime + 0.15);
         activeFMFreq[key].stop(audioCtx.currentTime + 0.15);
-        
         delete activeOscillator[key];
         delete activeFMFreq[key];
         delete activeGainNode[key];
