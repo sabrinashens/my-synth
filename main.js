@@ -236,8 +236,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
         });
         if (lfoBtn1 === true) {
             var lfo = audioCtx.createOscillator();
-            lfo.frequency.setValueAtTime(1, audioCtx.currentTime);
-            lfo.connect(gain);
+            lfo.frequency.setValueAtTime(0.8, audioCtx.currentTime);
+
+            const lfoGain = audioCtx.createGain();
+            lfoGain.gain.setValueAtTime(10, audioCtx.currentTime);
+            lfo.connect(lfoGain).connect(fundOsc.frequency);
             lfo.start();
         }
         activeOscillator[key] = fundOsc;
@@ -280,9 +283,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
         })	
        	if (lfoBtn2 === true) {
             var lfo = audioCtx.createOscillator();
-            lfo.frequency.setValueAtTime(10, audioCtx.currentTime);
-            lfo.connect(modulated);
-            lfo.start(); 
+            lfo.frequency.setValueAtTime(2, audioCtx.currentTime);
+
+            const lfoGain = audioCtx.createGain();
+            lfoGain.gain.setValueAtTime(100, audioCtx.currentTime);
+            lfo.connect(lfoGain).connect(modulatorFreq.frequency);
+            lfo.start();
         }
         activeOscillator[key] = carrier;
         activeAMFreq[key] = modulatorFreq;
@@ -331,8 +337,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
         }); 
         if (lfoBtn3 === true) {
             var lfo = audioCtx.createOscillator();
-            lfo.frequency.setValueAtTime(1.0, audioCtx.currentTime);
-            lfo.connect(gain);
+            lfo.frequency.setValueAtTime(2, audioCtx.currentTime);
+            
+            const lfoGain = audioCtx.createGain();
+            lfoGain.gain.setValueAtTime(300, audioCtx.currentTime);
+            lfo.connect(lfoGain).connect(modulatorFreq.frequency);
             lfo.start();
         }
         activeOscillator[key] = carrier;
